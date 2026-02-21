@@ -1,0 +1,19 @@
+- ros_topic_name: /camera/depth/points
+  gz_topic_name: /camera_head/points
+  ros_type_name: sensor_msgs/msg/PointCloud2
+  gz_type_name: gz.msgs.PointCloudPacked
+
+- ros_topic_name: /camera/color/image_raw
+  gz_topic_name: /camera_head/image
+  ros_type_name: sensor_msgs/msg/Image
+  gz_type_name: gz.msgs.Image
+
+- ros_topic_name: /camera/depth/image_raw
+  gz_topic_name: /camera_head/depth_image
+  ros_type_name: sensor_msgs/msg/Image
+  gz_type_name: gz.msgs.Image
+
+- ros_topic_name: /camera/depth/camera_info
+  gz_topic_name: /camera_head/camera_info
+  ros_type_name: sensor_msgs/msg/CameraInfo
+  gz_type_name: gz.msgs.CameraInfo
