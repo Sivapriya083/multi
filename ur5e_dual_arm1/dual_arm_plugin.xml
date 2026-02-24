@@ -1,0 +1,10 @@
+<!-- dual_arm_plugin.xml -->
+<library path="dual_arm_impedance_controller">
+  <class name="dual_arm_controller/DualArmImpedanceController"
+         type="dual_arm_controller::DualArmImpedanceController"
+         base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Custom impedance controller with coordination coupling for dual UR5e arms.
+    </description>
+  </class>
+</library>

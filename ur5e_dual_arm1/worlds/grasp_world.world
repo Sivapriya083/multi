@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<!--
+  grasp_place_world.world
+  =======================
+  Gazebo Sim world for the dual-arm coordinated grasp-and-place task.
+
+  Layout (top-down view):
+    - Table at center (x=0, y=0)
+    - Grasp box placed at center of table
+    - Left  arm base: y=+0.7
+    - Right arm base: y=-0.7
+    - Place zone marker at y=-0.5 (right side)
+-->
+<sdf version="1.8">
+  <world name="dual_arm_grasp_place">
+
+    <!-- Physics -->
+    <physics name="default" type="dart">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Plugins -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"/>
+
+    <!-- Lighting -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.4 0.4 0.4 1</ambient>
+            <diffuse>0.5 0.5 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- =========================================================== -->
+    <!-- TABLE — workspace surface between the two arms              -->
+    <!-- =========================================================== -->
+    <model name="table">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <link name="table_top">
+        <pose>0 0 0.3 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box><size>0.8 0.6 0.02</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.8 0.6 0.02</size></box>
+          </geometry>
+          <material>
+            <ambient>0.55 0.35 0.18 1</ambient>
+            <diffuse>0.65 0.42 0.22 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <!-- Table legs -->
+      <link name="leg_fl">
+        <pose> 0.35  0.25 0.15 0 0 0</pose>
+        <collision name="c"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="v"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.3 0.2 0.1 1</ambient></material></visual>
+      </link>
+      <link name="leg_fr">
+        <pose> 0.35 -0.25 0.15 0 0 0</pose>
+        <collision name="c"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="v"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.3 0.2 0.1 1</ambient></material></visual>
+      </link>
+      <link name="leg_bl">
+        <pose>-0.35  0.25 0.15 0 0 0</pose>
+        <collision name="c"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="v"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.3 0.2 0.1 1</ambient></material></visual>
+      </link>
+      <link name="leg_br">
+        <pose>-0.35 -0.25 0.15 0 0 0</pose>
+        <collision name="c"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry></collision>
+        <visual name="v"><geometry><cylinder><radius>0.03</radius><length>0.30</length></cylinder></geometry>
+          <material><ambient>0.3 0.2 0.1 1</ambient></material></visual>
+      </link>
+    </model>
+
+    <!-- =========================================================== -->
+    <!-- GRASP BOX — object to be picked and placed                  -->
+    <!-- Position: center of table surface (x=0, y=0, z=0.35)       -->
+    <!-- Both arms grasp this from opposing sides (±y direction)     -->
+    <!-- =========================================================== -->
+    <model name="grasp_box">
+      <pose>0 0 0.355 0 0 0</pose>
+      <link name="box_link">
+        <inertial>
+          <mass>0.3</mass>
+          <inertia>
+            <ixx>0.0003</ixx><ixy>0</ixy><ixz>0</ixz>
+            <iyy>0.0003</iyy><iyz>0</iyz>
+            <izz>0.0003</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box><size>0.08 0.12 0.08</size></box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.9</mu>
+                <mu2>0.9</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.08 0.12 0.08</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+            <diffuse>0.9 0.3 0.3 1</diffuse>
+            <specular>0.3 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- =========================================================== -->
+    <!-- PLACE ZONE MARKER — visual indicator of the target location -->
+    <!-- Where the box should be placed after transfer               -->
+    <!-- Position: right side of table (y=-0.2)                     -->
+    <!-- =========================================================== -->
+    <model name="place_zone_marker">
+      <static>true</static>
+      <pose>0 -0.2 0.312 0 0 0</pose>
+      <link name="marker_link">
+        <visual name="visual">
+          <geometry>
+            <box><size>0.12 0.16 0.002</size></box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.8 0.1 0.7</ambient>
+            <diffuse>0.1 0.9 0.1 0.7</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Place zone label (thin box with different color) -->
+    <model name="place_zone_border">
+      <static>true</static>
+      <pose>0 -0.2 0.313 0 0 0</pose>
+      <link name="border_link">
+        <visual name="visual">
+          <geometry>
+            <box><size>0.14 0.18 0.001</size></box>
+          </geometry>
+          <material>
+            <ambient>0.0 0.5 0.0 1</ambient>
+            <diffuse>0.0 0.6 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
