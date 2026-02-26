@@ -1,0 +1,87 @@
+# =============================================================================
+# FILE: ros2_controllers.yaml
+# PACKAGE: ur5e_bringup/config/
+# ROS VERSION: ROS 2 Jazzy / ros2_control
+#
+# PURPOSE:
+#   Configures the ros2_control controller_manager with two controllers:
+#   1. joint_state_broadcaster: publishes joint states to /joint_states
+#   2. forward_effort_controller: receives raw torques and sends to hardware
+#
+# HOW ROS2_CONTROL WORKS:
+#   Source: https://control.ros.org/jazzy/
+#           ros2_control framework architecture documentation
+#
+#   The ros2_control architecture:
+#     Hardware Interface <-> Controller Manager <-> Controllers
+#
+#   In Gazebo Harmonic:
+#     Hardware Interface = gz_ros2_control plugin
+#       - Reads joint positions/velocities from Gazebo physics
+#       - Writes joint effort commands to Gazebo physics
+#     Controller Manager = manages controller lifecycle
+#       - Loads, configures, activates/deactivates controllers
+#       - Manages real-time safety (checks update rates)
+#     Controllers = algorithms that read state and compute commands
+#       - joint_state_broadcaster: reads positions -> publishes to ROS
+#       - forward_effort_controller: subscribes to torques -> writes to hw
+#
+#   WHY "EFFORT" INTERFACE:
+#     ros2_control supports 3 joint interfaces:
+#       position: commands joint angles directly (ignores dynamics)
+#       velocity:  commands joint speeds (requires velocity tracking)
+#       effort:    commands joint TORQUES (our choice - physics-based)
+#     
+#     We use EFFORT because impedance control computes torques.
+#     The physics simulation (Gazebo ODE) integrates τ = I*α + ... to get
+#     actual motion. This is the highest-fidelity simulation approach.
+#
+#   WHY NOT A CUSTOM CONTROLLER PLUGIN:
+#     In ros2_control, you can write custom controller plugins (C++).
+#     We chose to implement in Python as a separate node for:
+#       - Easier development and iteration
+#       - Direct numpy access for matrix operations
+#       - No C++ compilation required
+#     The ForwardCommandController is a thin passthrough that simply
+#     writes our Python-computed torques to the hardware interface.
+# =============================================================================
+
+# controller_manager configuration
+# The update_rate sets the frequency at which all controllers are updated.
+# We use 500Hz to match our impedance controller's computation rate.
+controller_manager:
+  ros__parameters:
+    update_rate: 500  # Hz
+
+    # List of controllers to be loaded (but not yet activated)
+    # Activated by 'spawner' nodes in the launch file
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+      # No additional parameters needed - reads ALL joint interfaces
+
+    forward_effort_controller:
+      type: forward_command_controller/ForwardCommandController
+      # Configured below with its own parameter namespace
+
+
+# forward_effort_controller parameters
+# This controller:
+#   SUBSCRIBES TO: /forward_effort_controller/commands (Float64MultiArray)
+#   WRITES TO:     hardware joint effort interfaces
+#   DOES: directly passes commanded[i] -> effort_interface[joints[i]]
+#         No PID, no trajectory tracking, no safety checking (we handle that)
+forward_effort_controller:
+  ros__parameters:
+    joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+
+    # interface_name: which hardware interface to command
+    # 'effort' = joint torque/force interface
+    # Other options: 'position', 'velocity' (not used here)
+    interface_name: effort

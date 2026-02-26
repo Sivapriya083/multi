@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="3">
+
+  <name>ur5e_impulse_control</name>
+  <version>1.0.0</version>
+  <description>UR5e impulse disturbance rejection system</description>
+  <maintainer email="dev@example.com">Developer</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>ros_gz_interfaces</depend>
+  <depend>ros_gz_bridge</depend>
+  <depend>ros_gz_sim</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>controller_manager</depend>
+  <depend>forward_command_controller</depend>
+  <depend>joint_state_broadcaster</depend>
+  <depend>gz_ros2_control</depend>
+  <depend>xacro</depend>
+  <depend>rviz2</depend>
+
+  <exec_depend>python3-numpy</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>

@@ -1,0 +1,22 @@
+adaptive_impedance_controller:
+  ros__parameters:
+
+
+    control_rate_hz: 500
+
+    force_impulse_threshold:     15.0   # N   — raw force magnitude trigger
+    torque_impulse_threshold:     5.0   # Nm  — raw torque magnitude trigger
+    velocity_impulse_threshold:   0.3   # rad/s — joint velocity norm trigger
+
+    t_compliant_hold:   0.30   # seconds
+    t_recovery_blend:   1.50   # seconds
+
+    k_nominal_trans:   800.0   # N/m
+    k_nominal_rot:      60.0   # Nm/rad
+    d_nominal_trans:    80.0   # Ns/m
+    d_nominal_rot:       8.0   # Nms/rad
+
+    k_compliant_trans:   80.0  # N/m
+    k_compliant_rot:     10.0  # Nm/rad
+    d_compliant_trans:  120.0  # Ns/m
+    d_compliant_rot:     15.0  # Nms/rad
